@@ -4,15 +4,56 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retro Café Menu</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #fff;
+  }
+  #pdf-viewer {
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+    text-align: center;
+  }
+  canvas {
+    margin: 10px auto;
+    display: block;
+    max-width: 100%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  }
+</style>
 </head>
-<body style="margin:0; height:100vh;">
+<body>
 
-<iframe 
-    src="https://drive.google.com/file/d/1IJDhgCOId3jQIRrUQGN3WkFj6dpvqV18/preview"
-    width="100%" 
-    height="100%" 
-    style="border:none;">
-</iframe>
+<div id="pdf-viewer"></div>
+
+<!-- PDF.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.338/pdf.min.js"></script>
+<script>
+  const url = 'https://raw.githubusercontent.com/theretrocafeakola/menu/main/Retro-cafe-menu-file.pdf';
+
+  const pdfjsLib = window['pdfjs-dist/build/pdf'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.338/pdf.worker.min.js';
+
+  const pdfViewer = document.getElementById('pdf-viewer');
+
+  pdfjsLib.getDocument(url).promise.then(pdf => {
+    for(let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      pdf.getPage(pageNum).then(page => {
+        const viewport = page.getViewport({ scale: 1.2 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        pdfViewer.appendChild(canvas);
+        page.render({ canvasContext: context, viewport: viewport });
+      });
+    }
+  });
+</script>
 
 </body>
 </html>

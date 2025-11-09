@@ -31,7 +31,6 @@
       display: block;
     }
 
-    /* Fallback link styling */
     .fallback {
       text-align: center;
       padding: 20px;
@@ -67,19 +66,31 @@
   </div>
 
   <script>
-    // Check for inline PDF support (especially iOS Safari)
+    /**
+     * Detects if the browser can render PDFs inline in an <iframe>.
+     * This is better than just checking for iOS or Android user agents.
+     */
+    function canDisplayPDFsInline() {
+      const iframe = document.createElement('iframe');
+      iframe.type = 'application/pdf';
+
+      // Chrome, Edge, Firefox, Safari all support 'application/pdf' in navigator.mimeTypes if inline PDFs are supported
+      const supportsMime = navigator.mimeTypes && navigator.mimeTypes['application/pdf'];
+      if (supportsMime) return true;
+
+      // Fallback check for modern browsers that expose a PDF plugin
+      const hasPlugin = navigator.plugins && Array.from(navigator.plugins).some(p => p.name.includes('PDF'));
+      if (hasPlugin) return true;
+
+      // WebKit iOS browsers (Safari/Chrome/Edge) usually fail both tests
+      return false;
+    }
+
     document.addEventListener("DOMContentLoaded", function() {
       const iframe = document.getElementById("pdfFrame");
       const fallback = document.getElementById("fallback");
 
-      // Basic detection for iOS Safari and older mobile browsers
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-      const isAndroid = /Android/.test(navigator.userAgent);
-
-      // Many mobile browsers don’t support inline PDFs
-      const inlinePdfSupported = navigator.pdfViewerEnabled !== false && !isIOS;
-
-      if (!inlinePdfSupported) {
+      if (!canDisplayPDFsInline()) {
         iframe.style.display = "none";
         fallback.style.display = "block";
         document.body.style.overflow = "auto";

@@ -1,131 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retro Café Menu</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background-color: #000;
-      font-family: Arial, sans-serif;
-      color: #fff;
-      overflow: hidden;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Café Menu</title>
+<style>
+  /* Basic Reset */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #1a1a1a; /* Dark retro background */
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+  }
 
-    .pdf-container {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
+  /* Container */
+  .pdf-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #222 0%, #111 100%);
+    position: relative;
+  }
 
-    iframe {
-      border: none;
-      width: 100%;
-      height: 100%;
-      display: block;
-      background-color: #000;
-    }
+  /* Iframe styling */
+  iframe {
+    border: 4px solid #FFD700; /* Golden retro border */
+    border-radius: 12px;
+    width: 90%;
+    height: 90%;
+    display: block;
+    box-shadow: 0 0 20px #FFD700;
+    transition: transform 0.3s ease;
+  }
 
-    .fallback {
-      text-align: center;
-      padding: 20px;
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
+  iframe:hover {
+    transform: scale(1.02);
+  }
 
-    .fallback a {
-      color: #FFD700;
-      text-decoration: none;
-      font-size: 1.2em;
-      border: 2px solid #FFD700;
-      padding: 10px 20px;
-      border-radius: 6px;
-      margin-top: 10px;
-      transition: all 0.2s ease;
-    }
+  /* Loading spinner */
+  .spinner {
+    border: 5px solid rgba(255, 215, 0, 0.2);
+    border-top: 5px solid #FFD700;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+  }
 
-    .fallback a:hover {
-      background-color: #FFD700;
-      color: #000;
-    }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
-    /* Spinner */
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      border-top: 4px solid #FFD700;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      position: absolute;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <div class="pdf-container">
-    <div class="spinner" id="spinner"></div>
 
-    <iframe id="pdfFrame"
-      src="Retro-cafe-menu-file.pdf#toolbar=0&zoom=fitH"
-      allowfullscreen
-      title="Retro Café Menu PDF">
-    </iframe>
+<div class="pdf-container">
+  <div class="spinner" id="spinner"></div>
+  <iframe id="pdfFrame" src="Retro-cafe-menu-file.pdf#toolbar=0&zoom=fitH" allowfullscreen title="Retro Café Menu PDF"></iframe>
+</div>
 
-    <div class="fallback" id="fallback">
-      <h2>Retro Café Menu</h2>
-      <p>If the menu doesn’t appear, tap below to open it:</p>
-      <a href="Retro-cafe-menu-file.pdf" target="_blank" rel="noopener">
-        Open Menu (PDF)
-      </a>
-    </div>
-  </div>
+<script>
+  // Detect iOS devices
+  function isiOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
+  }
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const iframe = document.getElementById("pdfFrame");
-      const fallback = document.getElementById("fallback");
-      const spinner = document.getElementById("spinner");
+  document.addEventListener("DOMContentLoaded", function() {
+    const iframe = document.getElementById("pdfFrame");
+    const spinner = document.getElementById("spinner");
 
-      let loaded = false;
-
-      // When iframe loads successfully
+    if (isiOS()) {
+      // iOS: directly open PDF in full screen
+      window.location.href = "Retro-cafe-menu-file.pdf";
+    } else {
+      // Desktop/Android: show spinner until PDF loads
       iframe.onload = () => {
-        loaded = true;
         spinner.style.display = "none";
       };
+    }
+  });
+</script>
 
-      // After 8 seconds, if still not loaded, assume iOS/no-PDF-support
-      const MAX_WAIT = 8000; // 8 seconds
-      setTimeout(() => {
-        if (!loaded) {
-          iframe.style.display = "none";
-          spinner.style.display = "none";
-          fallback.style.display = "flex";
-          document.body.style.overflow = "auto";
-        }
-      }, MAX_WAIT);
-    });
-  </script>
 </body>
 </html>

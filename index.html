@@ -4,12 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retro Café Menu</title>
-<script>
-  // Immediately redirect to the PDF file
-  window.location.href = "Retro-cafe-menu-file.pdf";
-</script>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #1a1a1a; /* dark retro background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .menu-frame {
+    width: 95%;
+    max-width: 800px;
+    height: 90vh;
+    border: 5px solid #FFD700; /* golden border */
+    border-radius: 12px;
+    box-shadow: 0 0 20px #FFD700;
+    overflow: hidden;
+  }
+
+  iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  @media (max-width: 600px) {
+    .menu-frame {
+      height: 95vh;
+    }
+  }
+</style>
 </head>
 <body>
-<p><a href="Retro-cafe-menu-file.pdf">click here to open the menu</a>.</p>
+
+<div class="menu-frame">
+  <iframe 
+    src="https://docs.google.com/viewer?url=https://raw.githubusercontent.com/theretrocafeakola/menu/main/Retro-cafe-menu-file.pdf&embedded=true"
+    allowfullscreen
+    title="Retro Café Menu">
+  </iframe>
+</div>
+
 </body>
 </html>

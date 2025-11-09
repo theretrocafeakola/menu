@@ -10,159 +10,32 @@
     padding: 0;
     height: 100%;
     width: 100%;
-    background: #1a1a1a;
-    font-family: 'Courier New', Courier, monospace;
-    color: #fff;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    background: #fff; /* optional background */
   }
-
-  .menu-container {
-    width: 95%;
-    max-width: 800px;
-    height: 90%;
-    background: linear-gradient(135deg, #222 0%, #111 100%);
-    border: 4px solid #FFD700;
-    border-radius: 12px;
-    box-shadow: 0 0 20px #FFD700;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: auto;
-    position: relative;
-  }
-
-  canvas {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
-
-  .spinner {
-    border: 5px solid rgba(255, 215, 0, 0.2);
-    border-top: 5px solid #FFD700;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* Optional navigation buttons */
-  .nav-buttons {
-    margin-top: 10px;
-  }
-
-  .nav-buttons button {
-    background: #FFD700;
-    color: #000;
+  iframe {
     border: none;
-    padding: 8px 16px;
-    margin: 0 5px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.2s;
+    width: 100%;
+    height: 100%;
+    display: block;
   }
-
-  .nav-buttons button:hover {
-    background: #fff;
-  }
-
 </style>
 </head>
 <body>
 
-<div class="menu-container">
-  <div class="spinner" id="spinner"></div>
-  <canvas id="pdfCanvas"></canvas>
-  <div class="nav-buttons">
-    <button id="prevPage">Prev</button>
-    <button id="nextPage">Next</button>
-    <span id="pageInfo"></span>
-  </div>
-</div>
+<iframe id="pdfFrame" src="Retro-cafe-menu-file.pdf#toolbar=0"></iframe>
 
-<!-- PDF.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.314/pdf.min.js"></script>
 <script>
-  const url = 'Retro-cafe-menu-file.pdf'; // PDF file path
-
-  const canvas = document.getElementById('pdfCanvas');
-  const ctx = canvas.getContext('2d');
-  const spinner = document.getElementById('spinner');
-  const pageInfo = document.getElementById('pageInfo');
-
-  let pdfDoc = null;
-  let pageNum = 1;
-  let pageRendering = false;
-  let pageNumPending = null;
-  const scale = 1.2; // adjust zoom
-
-  // Load PDF
-  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.314/pdf.worker.min.js';
-  pdfjsLib.getDocument(url).promise.then(pdf => {
-    pdfDoc = pdf;
-    spinner.style.display = 'none';
-    renderPage(pageNum);
-  });
-
-  function renderPage(num) {
-    pageRendering = true;
-    pdfDoc.getPage(num).then(page => {
-      const viewport = page.getViewport({ scale: scale });
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      const renderContext = {
-        canvasContext: ctx,
-        viewport: viewport
-      };
-      const renderTask = page.render(renderContext);
-
-      renderTask.promise.then(() => {
-        pageRendering = false;
-        pageInfo.textContent = `Page ${pageNum} of ${pdfDoc.numPages}`;
-        if (pageNumPending !== null) {
-          renderPage(pageNumPending);
-          pageNumPending = null;
-        }
-      });
-    });
+  // Detect iOS devices
+  function isiOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent);
   }
 
-  function queueRenderPage(num) {
-    if (pageRendering) {
-      pageNumPending = num;
-    } else {
-      renderPage(num);
+  document.addEventListener("DOMContentLoaded", function() {
+    if (isiOS()) {
+      // iOS cannot reliably show PDFs inline, so open PDF directly
+      window.location.href = "Retro-cafe-menu-file.pdf";
     }
-  }
-
-  document.getElementById('prevPage').addEventListener('click', () => {
-    if (pageNum <= 1) return;
-    pageNum--;
-    queueRenderPage(pageNum);
   });
-
-  document.getElementById('nextPage').addEventListener('click', () => {
-    if (pageNum >= pdfDoc.numPages) return;
-    pageNum++;
-    queueRenderPage(pageNum);
-  });
-
 </script>
 
 </body>

@@ -4,39 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Retro Café Menu</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-    background: #fff; /* optional background */
-  }
-  iframe {
-    border: none;
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-</style>
+<script>
+  // Immediately redirect to the PDF file
+  window.location.href = "Retro-cafe-menu-file.pdf";
+</script>
 </head>
 <body>
-
-<iframe id="pdfFrame" src="Retro-cafe-menu-file.pdf#toolbar=0"></iframe>
-
-<script>
-  // Detect iOS devices
-  function isiOS() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent);
-  }
-
-  document.addEventListener("DOMContentLoaded", function() {
-    if (isiOS()) {
-      // iOS cannot reliably show PDFs inline, so open PDF directly
-      window.location.href = "Retro-cafe-menu-file.pdf";
-    }
-  });
-</script>
-
+<p><a href="Retro-cafe-menu-file.pdf">click here to open the menu</a>.</p>
 </body>
 </html>

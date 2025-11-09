@@ -22,6 +22,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     iframe {
@@ -29,72 +30,101 @@
       width: 100%;
       height: 100%;
       display: block;
+      background-color: #000;
     }
 
     .fallback {
       text-align: center;
       padding: 20px;
       display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     .fallback a {
       color: #FFD700;
       text-decoration: none;
       font-size: 1.2em;
+      border: 2px solid #FFD700;
+      padding: 10px 20px;
+      border-radius: 6px;
+      margin-top: 10px;
+      transition: all 0.2s ease;
     }
 
     .fallback a:hover {
-      text-decoration: underline;
+      background-color: #FFD700;
+      color: #000;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid #FFD700;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <div class="pdf-container">
+    <div class="spinner" id="spinner"></div>
+
     <iframe id="pdfFrame"
       src="Retro-cafe-menu-file.pdf#toolbar=0&zoom=fitH"
       allowfullscreen
       title="Retro Café Menu PDF">
     </iframe>
+
     <div class="fallback" id="fallback">
-      <p>Having trouble viewing the menu?</p>
-      <p>
-        <a href="Retro-cafe-menu-file.pdf" target="_blank" rel="noopener">
-          Tap here to open or download the menu
-        </a>
-      </p>
+      <h2>Retro Café Menu</h2>
+      <p>If the menu doesn’t appear, tap below to open it:</p>
+      <a href="Retro-cafe-menu-file.pdf" target="_blank" rel="noopener">
+        Open Menu (PDF)
+      </a>
     </div>
   </div>
 
   <script>
-    /**
-     * Detects if the browser can render PDFs inline in an <iframe>.
-     * This is better than just checking for iOS or Android user agents.
-     */
-    function canDisplayPDFsInline() {
-      const iframe = document.createElement('iframe');
-      iframe.type = 'application/pdf';
-
-      // Chrome, Edge, Firefox, Safari all support 'application/pdf' in navigator.mimeTypes if inline PDFs are supported
-      const supportsMime = navigator.mimeTypes && navigator.mimeTypes['application/pdf'];
-      if (supportsMime) return true;
-
-      // Fallback check for modern browsers that expose a PDF plugin
-      const hasPlugin = navigator.plugins && Array.from(navigator.plugins).some(p => p.name.includes('PDF'));
-      if (hasPlugin) return true;
-
-      // WebKit iOS browsers (Safari/Chrome/Edge) usually fail both tests
-      return false;
-    }
-
     document.addEventListener("DOMContentLoaded", function() {
       const iframe = document.getElementById("pdfFrame");
       const fallback = document.getElementById("fallback");
+      const spinner = document.getElementById("spinner");
 
-      if (!canDisplayPDFsInline()) {
-        iframe.style.display = "none";
-        fallback.style.display = "block";
-        document.body.style.overflow = "auto";
-      }
+      let loaded = false;
+
+      // When iframe loads successfully
+      iframe.onload = () => {
+        loaded = true;
+        spinner.style.display = "none";
+      };
+
+      // After 8 seconds, if still not loaded, assume iOS/no-PDF-support
+      const MAX_WAIT = 8000; // 8 seconds
+      setTimeout(() => {
+        if (!loaded) {
+          iframe.style.display = "none";
+          spinner.style.display = "none";
+          fallback.style.display = "flex";
+          document.body.style.overflow = "auto";
+        }
+      }, MAX_WAIT);
     });
   </script>
 </body>
